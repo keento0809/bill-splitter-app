@@ -26,7 +26,7 @@ const GroupPage: React.FC = () => {
 
     const load_group = async () => {
       try {
-        const loaded_group = storage_service.get_group(groupId);
+        const loaded_group = await storage_service.get_group(groupId);
         if (!loaded_group) {
           setError('指定されたグループが見つかりません');
           return;
@@ -47,12 +47,12 @@ const GroupPage: React.FC = () => {
     return calculate_optimal_settlements(group.members, group.payments, group.settings);
   }, [group]);
 
-  const update_group = useCallback((updates: Partial<Group>) => {
+  const update_group = useCallback(async (updates: Partial<Group>) => {
     if (!group) return;
     
     const updated_group = { ...group, ...updates, updatedAt: new Date() };
     setGroup(updated_group);
-    storage_service.save_group(updated_group);
+    await storage_service.save_group(updated_group);
   }, [group]);
 
   const handle_members_change = useCallback((members: Member[]) => {

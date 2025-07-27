@@ -75,7 +75,7 @@ export default defineConfig({
   build: {
     target: 'es2022',
     minify: 'terser',
-    sourcemap: true,
+    sourcemap: process.env.NODE_ENV !== 'production',
     terserOptions: {
       compress: {
         drop_console: true,

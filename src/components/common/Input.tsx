@@ -1,4 +1,5 @@
 import type { InputType } from '../../types/index.d.ts';
+import { escape_html, generate_id } from '../../utils/helpers';
 
 interface InputProps {
   id?: string;
@@ -33,7 +34,8 @@ const Input: React.FC<InputProps> = ({
   step,
   'data-testid': testId,
 }) => {
-  const inputId = id || `input-${Math.random().toString(36).substring(2)}`;
+  // セキュリティ強化: 安全なID生成
+  const inputId = id || `input-${generate_id().substring(0, 8)}`;
 
   const baseClasses = 'w-full px-3 py-2 border rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:bg-gray-100 disabled:cursor-not-allowed';
   
@@ -50,7 +52,8 @@ const Input: React.FC<InputProps> = ({
           htmlFor={inputId} 
           className="block text-sm font-medium text-gray-700 mb-1"
         >
-          {label}
+          {/* セキュリティ強化: ラベルのHTMLエスケープ */}
+          <span dangerouslySetInnerHTML={{__html: escape_html(label)}} />
           {required && <span className="text-red-500 ml-1">*</span>}
         </label>
       )}
@@ -70,7 +73,8 @@ const Input: React.FC<InputProps> = ({
       />
       {error && (
         <p className="mt-1 text-sm text-red-600" role="alert">
-          {error}
+          {/* セキュリティ強化: エラーメッセージのHTMLエスケープ */}
+          <span dangerouslySetInnerHTML={{__html: escape_html(error)}} />
         </p>
       )}
     </div>
