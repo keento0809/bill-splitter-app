@@ -40,7 +40,7 @@ const Home: React.FC = () => {
         updatedAt: new Date()
       };
 
-      storage_service.save_group(newGroup);
+      await storage_service.save_group(newGroup);
       navigate(`/group/${groupId}`);
     } catch {
       setError('グループの作成に失敗しました');
@@ -59,7 +59,7 @@ const Home: React.FC = () => {
     setError('');
 
     try {
-      const group = storage_service.get_group(joinGroupId.trim());
+      const group = await storage_service.get_group(joinGroupId.trim());
       if (!group) {
         setError('指定されたグループが見つかりません');
         return;
