@@ -14,11 +14,11 @@ export const storage_service = {
         ...parsed,
         createdAt: new Date(parsed.createdAt),
         updatedAt: new Date(parsed.updatedAt),
-        members: parsed.members.map((member: any) => ({
+        members: parsed.members.map((member: { createdAt: string; [key: string]: unknown }) => ({
           ...member,
           createdAt: new Date(member.createdAt)
         })),
-        payments: parsed.payments.map((payment: any) => ({
+        payments: parsed.payments.map((payment: { createdAt: string; updatedAt: string; [key: string]: unknown }) => ({
           ...payment,
           createdAt: new Date(payment.createdAt),
           updatedAt: new Date(payment.updatedAt)

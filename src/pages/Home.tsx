@@ -42,7 +42,7 @@ const Home: React.FC = () => {
 
       storage_service.save_group(newGroup);
       navigate(`/group/${groupId}`);
-    } catch (err) {
+    } catch {
       setError('グループの作成に失敗しました');
     } finally {
       setLoading(false);
@@ -66,7 +66,7 @@ const Home: React.FC = () => {
       }
 
       navigate(`/group/${joinGroupId.trim()}`);
-    } catch (err) {
+    } catch {
       setError('グループへの参加に失敗しました');
     } finally {
       setLoading(false);

@@ -33,7 +33,7 @@ export function truncate_text(text: string, maxLength: number): string {
   return text.substring(0, maxLength - 3) + '...';
 }
 
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: unknown[]) => unknown>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
