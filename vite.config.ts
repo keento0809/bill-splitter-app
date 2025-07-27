@@ -23,7 +23,7 @@ export default defineConfig({
       open: false,
       gzipSize: true,
       brotliSize: true,
-    }) as any,
+    }),
     // PWA対応
     VitePWA({
       registerType: 'autoUpdate',

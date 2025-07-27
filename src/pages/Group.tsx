@@ -32,7 +32,7 @@ const GroupPage: React.FC = () => {
           return;
         }
         setGroup(loaded_group);
-      } catch (err) {
+      } catch {
         setError('グループの読み込みに失敗しました');
       } finally {
         setLoading(false);
@@ -45,7 +45,7 @@ const GroupPage: React.FC = () => {
   const calculation_result = useMemo(() => {
     if (!group) return null;
     return calculate_optimal_settlements(group.members, group.payments, group.settings);
-  }, [group?.members, group?.payments, group?.settings]);
+  }, [group]);
 
   const update_group = useCallback((updates: Partial<Group>) => {
     if (!group) return;
