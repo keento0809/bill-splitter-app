@@ -86,14 +86,14 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
       {/* ドロップダウンメニュー */}
       {isOpen && (
         <div
-          className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
+          className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50"
           data-testid="hamburger-dropdown"
         >
           {/* メンバー管理 */}
           {onMembersClick && (
             <button
               onClick={handle_members_click}
-              className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 transition-colors flex items-center space-x-2"
+              className="w-full px-4 py-2.5 text-left text-gray-700 hover:bg-gray-50 transition-colors flex items-center space-x-2"
               data-testid="menu-members-button"
             >
               <svg
@@ -115,7 +115,7 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
 
           <button
             onClick={handle_home_click}
-            className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 transition-colors flex items-center space-x-2"
+            className="w-full px-4 py-2.5 text-left text-gray-700 hover:bg-gray-50 transition-colors flex items-center space-x-2"
             data-testid="menu-home-button"
           >
             <svg
@@ -137,7 +137,7 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
           {groupId && onShare && (
             <button
               onClick={handle_share_click}
-              className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 transition-colors flex items-center space-x-2"
+              className="w-full px-4 py-2.5 text-left text-gray-700 hover:bg-gray-50 transition-colors flex items-center space-x-2"
               data-testid="menu-share-button"
             >
               <svg

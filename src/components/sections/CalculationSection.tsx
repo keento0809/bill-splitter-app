@@ -47,7 +47,7 @@ const CalculationSection: React.FC<CalculationSectionProps> = ({
       data-testid="calculation-section"
     >
 
-        <div className="flex flex-col md:flex-row gap-4 mb-6">
+        <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1 bg-blue-50 rounded-lg p-3 md:p-4">
             <div className="flex justify-between items-center">
               <h3 className="text-sm font-medium text-blue-900">
@@ -71,7 +71,7 @@ const CalculationSection: React.FC<CalculationSectionProps> = ({
         </div>
 
         {has_settlements && (
-          <div>
+          <div className="mt-6">
             <div className="flex justify-between items-center mb-3">
               <h3 className="text-base md:text-lg font-medium text-gray-900">
                 清算方法
