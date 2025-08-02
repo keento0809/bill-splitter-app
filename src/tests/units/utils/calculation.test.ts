@@ -4,8 +4,8 @@ import {
   minimize_transactions,
   calculate_optimal_settlements,
   apply_rounding
-} from '../calculation';
-import type { Member, Payment, GroupSettings } from '../../types/index.d.ts';
+} from '../../../utils/calculation';
+import type { Member, Payment, GroupSettings } from '../../../types/index.d.ts';
 
 describe('calculation utilities', () => {
   const defaultSettings: GroupSettings = {
