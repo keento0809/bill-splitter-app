@@ -24,7 +24,7 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
       {/* ヘッダー部分 - クリック可能 */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-4 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors rounded-t-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset"
+        className="w-full px-4 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors rounded-t-lg focus:outline-none"
         data-testid={`${testId}-toggle`}
       >
         <div className="flex items-center space-x-3">
