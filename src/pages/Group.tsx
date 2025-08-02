@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Button from '../components/common/Button';
 import Loading from '../components/common/Loading';
 import HamburgerMenu from '../components/common/HamburgerMenu';
-import MemberSection from '../components/sections/MemberSection';
+import MemberManagementModal from '../components/common/MemberManagementModal';
 import PaymentSection from '../components/sections/PaymentSection';
 import CalculationSection from '../components/sections/CalculationSection';
 import { storage_service } from '../services/storage';
@@ -18,6 +18,8 @@ const GroupPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [copySuccess, setCopySuccess] = useState(false);
+  const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
+  const [isPaymentFormOpen, setIsPaymentFormOpen] = useState(false);
 
   useEffect(() => {
     if (!groupId) {
@@ -76,9 +78,16 @@ const GroupPage: React.FC = () => {
     }
   };
 
-  const truncate_group_id = (id: string, maxLength: number = 14) => {
-    if (id.length <= maxLength) return id;
-    return `${id.slice(0, maxLength)}...`;
+  const handle_open_member_modal = () => {
+    setIsMemberModalOpen(true);
+  };
+
+  const handle_close_member_modal = () => {
+    setIsMemberModalOpen(false);
+  };
+
+  const handle_open_payment_form = () => {
+    setIsPaymentFormOpen(true);
   };
 
   if (loading) {
@@ -118,13 +127,17 @@ const GroupPage: React.FC = () => {
               <h1 className="text-xl md:text-2xl font-bold text-gray-900 truncate" data-testid="group-name">
                 {group.name}
               </h1>
-              <p className="text-xs md:text-sm text-gray-600 mt-1">
-                グループID: <span className="font-mono">{truncate_group_id(groupId || '')}</span>
-              </p>
             </div>
             
             {/* デスクトップ表示: 通常のボタン */}
             <div className="hidden md:flex items-center space-x-3">
+              <Button
+                variant="outline"
+                onClick={handle_open_member_modal}
+                data-testid="desktop-members-button"
+              >
+                メンバー ({group.members.filter(m => m.isActive).length}人)
+              </Button>
               <Button
                 variant="outline"
                 onClick={handle_share}
@@ -147,6 +160,8 @@ const GroupPage: React.FC = () => {
                 groupId={groupId}
                 onShare={handle_share}
                 shareText={copySuccess ? 'コピー済み!' : 'シェア'}
+                members={group.members}
+                onMembersClick={handle_open_member_modal}
               />
             </div>
           </div>
@@ -154,26 +169,48 @@ const GroupPage: React.FC = () => {
       </header>
 
       <main className="max-w-6xl mx-auto px-4 py-4 md:py-8">
+        {/* 支払い追加ボタン - ヘッダー直下 */}
+        <div className="mb-4 md:mb-8">
+          <Button
+            onClick={handle_open_payment_form}
+            disabled={group.members.filter(m => m.isActive).length === 0}
+            data-testid="add-payment-button"
+            className="w-full md:w-auto"
+            size="lg"
+          >
+            支払い追加
+          </Button>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
-          <div className="space-y-4 md:space-y-8">
-            <MemberSection
-              members={group.members}
-              onMembersChange={handle_members_change}
-            />
-            <PaymentSection
-              payments={group.payments}
-              members={group.members}
-              onPaymentsChange={handle_payments_change}
-            />
-          </div>
+          {/* 左側: 清算結果（最初に表示、常に開いた状態） */}
           <div className="space-y-4 md:space-y-8">
             <CalculationSection
               result={calculation_result}
               members={group.members}
             />
           </div>
+          
+          {/* 右側: 支払い履歴 */}
+          <div className="space-y-4 md:space-y-8">
+            <PaymentSection
+              payments={group.payments}
+              members={group.members}
+              onPaymentsChange={handle_payments_change}
+              isFormOpen={isPaymentFormOpen}
+              onFormOpenChange={setIsPaymentFormOpen}
+            />
+          </div>
         </div>
       </main>
+
+      {/* メンバー管理モーダル */}
+      <MemberManagementModal
+        isOpen={isMemberModalOpen}
+        onClose={handle_close_member_modal}
+        members={group.members}
+        onMembersChange={handle_members_change}
+      />
     </div>
   );
 };

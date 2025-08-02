@@ -10,14 +10,22 @@ interface PaymentSectionProps {
   payments: Payment[];
   members: Member[];
   onPaymentsChange: (payments: Payment[]) => void;
+  isFormOpen?: boolean;
+  onFormOpenChange?: (isOpen: boolean) => void;
 }
 
 const PaymentSection: React.FC<PaymentSectionProps> = ({
   payments,
   members,
   onPaymentsChange,
+  isFormOpen: externalIsFormOpen = false,
+  onFormOpenChange,
 }) => {
-  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [internalIsFormOpen, setInternalIsFormOpen] = useState(false);
+  
+  // 外部制御がある場合はそれを使用、ない場合は内部状態を使用
+  const isFormOpen = onFormOpenChange ? externalIsFormOpen : internalIsFormOpen;
+  const setIsFormOpen = onFormOpenChange || setInternalIsFormOpen;
   const [editingPayment, setEditingPayment] = useState<Payment | null>(null);
   const [formData, setFormData] = useState<PaymentFormData>({
     amount: '',
@@ -39,12 +47,6 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
       excludedMembers: []
     });
     setErrors({});
-  };
-
-  const open_add_form = () => {
-    reset_form();
-    setEditingPayment(null);
-    setIsFormOpen(true);
   };
 
   const open_edit_form = (payment: Payment) => {
@@ -176,16 +178,6 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
       icon={payment_icon}
       data-testid="payment-section"
     >
-      <div className="flex items-center justify-between mb-4">
-        <Button
-          onClick={open_add_form}
-          disabled={activeMembers.length === 0}
-          data-testid="add-payment-button"
-          className="w-full md:w-auto"
-        >
-          支払い追加
-        </Button>
-      </div>
 
       <div className="space-y-3">
         {payments.length === 0 ? (

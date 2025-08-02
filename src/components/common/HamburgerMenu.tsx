@@ -1,16 +1,21 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import type { Member } from '../../types/index.d.ts';
 
 interface HamburgerMenuProps {
   groupId?: string;
   onShare?: () => void;
   shareText?: string;
+  members?: Member[];
+  onMembersClick?: () => void;
 }
 
 const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
   groupId,
   onShare,
-  shareText = 'シェア'
+  shareText = 'シェア',
+  members = [],
+  onMembersClick
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -40,6 +45,15 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
       onShare();
     }
   };
+
+  const handle_members_click = () => {
+    setIsOpen(false);
+    if (onMembersClick) {
+      onMembersClick();
+    }
+  };
+
+  const active_members_count = members.filter(m => m.isActive).length;
 
   return (
     <div className="relative" ref={menuRef} data-testid="hamburger-menu">
@@ -75,6 +89,30 @@ const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
           className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
           data-testid="hamburger-dropdown"
         >
+          {/* メンバー管理 */}
+          {onMembersClick && (
+            <button
+              onClick={handle_members_click}
+              className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 transition-colors flex items-center space-x-2"
+              data-testid="menu-members-button"
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
+                />
+              </svg>
+              <span>メンバー ({active_members_count}人)</span>
+            </button>
+          )}
+
           <button
             onClick={handle_home_click}
             className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 transition-colors flex items-center space-x-2"

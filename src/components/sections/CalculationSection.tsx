@@ -1,4 +1,3 @@
-import CollapsibleSection from '../common/CollapsibleSection';
 import { format_currency } from '../../utils/helpers';
 import type { CalculationResult, Member } from '../../types/index.d.ts';
 
@@ -29,15 +28,17 @@ const CalculationSection: React.FC<CalculationSectionProps> = ({
 
   if (!result) {
     return (
-      <CollapsibleSection
-        title="清算結果"
-        icon={calculation_icon}
-        data-testid="calculation-section"
-      >
-        <p className="text-gray-500 text-center py-8">
-          支払い記録を追加すると清算結果が表示されます
-        </p>
-      </CollapsibleSection>
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200" data-testid="calculation-section">
+        <div className="px-4 py-4">
+          <div className="flex items-center space-x-3 mb-4">
+            {calculation_icon}
+            <h2 className="text-lg font-semibold text-gray-900">清算結果</h2>
+          </div>
+          <p className="text-gray-500 text-center py-8">
+            支払い記録を追加すると清算結果が表示されます
+          </p>
+        </div>
+      </div>
     );
   }
 
@@ -45,14 +46,15 @@ const CalculationSection: React.FC<CalculationSectionProps> = ({
 
   return (
     <div className="space-y-6">
-      <CollapsibleSection
-        title="清算結果"
-        icon={calculation_icon}
-        data-testid="calculation-section"
-      >
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200" data-testid="calculation-section">
+        <div className="px-4 py-4">
+          <div className="flex items-center space-x-3 mb-4">
+            {calculation_icon}
+            <h2 className="text-lg font-semibold text-gray-900">清算結果</h2>
+          </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <div className="bg-blue-50 rounded-lg p-3 md:p-4">
+        <div className="flex flex-col md:flex-row gap-4 mb-6">
+          <div className="flex-1 bg-blue-50 rounded-lg p-3 md:p-4">
             <h3 className="text-sm font-medium text-blue-900 mb-1">
               総支出額
             </h3>
@@ -60,7 +62,7 @@ const CalculationSection: React.FC<CalculationSectionProps> = ({
               {format_currency(result.totalAmount)}
             </p>
           </div>
-          <div className="bg-green-50 rounded-lg p-3 md:p-4">
+          <div className="flex-1 bg-green-50 rounded-lg p-3 md:p-4">
             <h3 className="text-sm font-medium text-green-900 mb-1">
               一人当たり
             </h3>
@@ -114,52 +116,55 @@ const CalculationSection: React.FC<CalculationSectionProps> = ({
             </p>
           </div>
         )}
-      </CollapsibleSection>
+        </div>
+      </div>
 
-      <CollapsibleSection
-        title="個人収支"
-        icon={balance_icon}
-        data-testid="balance-section"
-      >
-        <div className="space-y-2">
-          {Object.entries(result.balances).map(([memberId, balance]) => {
-            const member = members.find(m => m.id === memberId);
-            if (!member || !member.isActive) return null;
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200" data-testid="balance-section">
+        <div className="px-4 py-4">
+          <div className="flex items-center space-x-3 mb-4">
+            {balance_icon}
+            <h2 className="text-lg font-semibold text-gray-900">個人収支</h2>
+          </div>
+          <div className="space-y-2">
+            {Object.entries(result.balances).map(([memberId, balance]) => {
+              const member = members.find(m => m.id === memberId);
+              if (!member || !member.isActive) return null;
 
-            const balanceColor = balance > 0 
-              ? 'text-green-600' 
-              : balance < 0 
-                ? 'text-red-600' 
-                : 'text-gray-600';
+              const balanceColor = balance > 0 
+                ? 'text-green-600' 
+                : balance < 0 
+                  ? 'text-red-600' 
+                  : 'text-gray-600';
 
-            const balanceText = balance > 0 
-              ? '受け取り予定' 
-              : balance < 0 
-                ? '支払い予定' 
-                : '清算済み';
+              const balanceText = balance > 0 
+                ? '受け取り予定' 
+                : balance < 0 
+                  ? '支払い予定' 
+                  : '清算済み';
 
-            return (
-              <div
-                key={memberId}
-                className="flex items-center justify-between p-3 border border-gray-200 rounded-lg"
-                data-testid={`balance-${memberId}`}
-              >
-                <span className="font-medium text-gray-900 text-sm md:text-base">
-                  {member.name}
-                </span>
-                <div className="text-right">
-                  <div className={`text-base md:text-lg font-semibold ${balanceColor}`}>
-                    {balance === 0 ? '±0円' : format_currency(Math.abs(balance))}
-                  </div>
-                  <div className={`text-xs ${balanceColor}`}>
-                    {balanceText}
+              return (
+                <div
+                  key={memberId}
+                  className="flex items-center justify-between p-3 border border-gray-200 rounded-lg"
+                  data-testid={`balance-${memberId}`}
+                >
+                  <span className="font-medium text-gray-900 text-sm md:text-base">
+                    {member.name}
+                  </span>
+                  <div className="text-right">
+                    <div className={`text-base md:text-lg font-semibold ${balanceColor}`}>
+                      {balance === 0 ? '±0円' : format_currency(Math.abs(balance))}
+                    </div>
+                    <div className={`text-xs ${balanceColor}`}>
+                      {balanceText}
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
-      </CollapsibleSection>
+      </div>
     </div>
   );
 };
