@@ -201,27 +201,32 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
               className="border border-gray-200 rounded-lg p-4 bg-white"
               data-testid={`payment-item-${payment.id}`}
             >
-              <div className="flex flex-col md:flex-row md:items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex flex-col md:flex-row md:items-center space-y-1 md:space-y-0 md:space-x-2 mb-2">
-                    <h3 className="font-medium text-gray-900">
-                      {payment.description}
-                    </h3>
-                    <span className="text-lg font-semibold text-primary">
-                      {format_currency(payment.amount)}
-                    </span>
-                  </div>
-                  <p className="text-sm text-gray-600 mb-1">
+              <div className="space-y-3">
+                {/* タイトルと金額 */}
+                <div className="flex justify-between items-center">
+                  <h3 className="font-medium text-gray-900">
+                    {payment.description}
+                  </h3>
+                  <span className="text-lg font-semibold text-primary">
+                    {format_currency(payment.amount)}
+                  </span>
+                </div>
+                
+                {/* 詳細情報 */}
+                <div className="space-y-1">
+                  <p className="text-sm text-gray-600">
                     支払者: {get_member_name(payment.payerId)}
                   </p>
-                  <p className="text-sm text-gray-600 mb-1">
+                  <p className="text-sm text-gray-600">
                     参加者: {payment.participants.map(id => get_member_name(id)).join(', ')}
                   </p>
                   <p className="text-xs text-gray-400">
                     {format_date(payment.createdAt)}
                   </p>
                 </div>
-                <div className="flex items-center space-x-1 md:space-x-2 mt-3 md:mt-0 md:ml-4">
+
+                {/* アクションボタン */}
+                <div className="flex items-center space-x-1 md:space-x-2 pt-2">
                   <Button
                     size="sm"
                     variant="outline"
