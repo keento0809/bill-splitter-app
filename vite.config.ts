@@ -150,6 +150,13 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: ['./src/test/setup.ts'],
+    setupFiles: ['./src/tests/setup.ts'],
+    include: [
+      'src/tests/units/**/*.{test,spec}.{js,ts,jsx,tsx}',
+      'src/tests/integration/**/*.{test,spec}.{js,ts,jsx,tsx}'
+    ],
+    exclude: [
+      'src/tests/e2e/**/*'
+    ]
   },
 })

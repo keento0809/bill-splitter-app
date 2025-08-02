@@ -11,8 +11,11 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:run": "vitest run",
+    "test:units": "vitest run src/tests/units",
+    "test:integration": "vitest run src/tests/integration",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
+    "test:all": "npm run test:units && npm run test:integration && npm run test:e2e",
     "perf": "npm run build && npm run preview"
   },
   "dependencies": {
