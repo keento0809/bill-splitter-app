@@ -4,7 +4,7 @@ import type { Group } from '../../../types/index.d.ts';
 
 // localStorage のモック
 const localStorageMock = (() => {
-  let store = new Map<string, string>();
+  const store = new Map<string, string>();
 
   return {
     getItem: vi.fn((key: string) => store.get(key) || null),

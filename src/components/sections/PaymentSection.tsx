@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Button from '../common/Button';
 import Input from '../common/Input';
 import Modal from '../common/Modal';
+import CollapsibleSection from '../common/CollapsibleSection';
 import { generate_id, validate_amount, parse_amount, format_currency, format_date } from '../../utils/helpers';
 import type { Payment, Member, PaymentFormData } from '../../types/index.d.ts';
 
@@ -163,16 +164,24 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
     return members.find(m => m.id === memberId)?.name || '不明';
   };
 
+  const payment_icon = (
+    <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+    </svg>
+  );
+
   return (
-    <div className="card">
+    <CollapsibleSection
+      title={`支払い履歴 (${payments.length}件)`}
+      icon={payment_icon}
+      data-testid="payment-section"
+    >
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold text-gray-900">
-          支払い履歴 ({payments.length}件)
-        </h2>
         <Button
           onClick={open_add_form}
           disabled={activeMembers.length === 0}
           data-testid="add-payment-button"
+          className="w-full md:w-auto"
         >
           支払い追加
         </Button>
@@ -190,9 +199,9 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
               className="border border-gray-200 rounded-lg p-4 bg-white"
               data-testid={`payment-item-${payment.id}`}
             >
-              <div className="flex items-start justify-between">
+              <div className="flex flex-col md:flex-row md:items-start justify-between">
                 <div className="flex-1">
-                  <div className="flex items-center space-x-2 mb-2">
+                  <div className="flex flex-col md:flex-row md:items-center space-y-1 md:space-y-0 md:space-x-2 mb-2">
                     <h3 className="font-medium text-gray-900">
                       {payment.description}
                     </h3>
@@ -210,12 +219,13 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
                     {format_date(payment.createdAt)}
                   </p>
                 </div>
-                <div className="flex items-center space-x-2 ml-4">
+                <div className="flex items-center space-x-1 md:space-x-2 mt-3 md:mt-0 md:ml-4">
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={() => open_edit_form(payment)}
                     data-testid={`edit-payment-${payment.id}`}
+                    className="text-xs md:text-sm px-2 md:px-3"
                   >
                     編集
                   </Button>
@@ -224,6 +234,7 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
                     variant="danger"
                     onClick={() => remove_payment(payment.id)}
                     data-testid={`remove-payment-${payment.id}`}
+                    className="text-xs md:text-sm px-2 md:px-3"
                   >
                     削除
                   </Button>
@@ -355,7 +366,7 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
           </div>
         </form>
       </Modal>
-    </div>
+    </CollapsibleSection>
   );
 };
 

@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Button from '../components/common/Button';
 import Loading from '../components/common/Loading';
+import HamburgerMenu from '../components/common/HamburgerMenu';
 import MemberSection from '../components/sections/MemberSection';
 import PaymentSection from '../components/sections/PaymentSection';
 import CalculationSection from '../components/sections/CalculationSection';
@@ -75,6 +76,11 @@ const GroupPage: React.FC = () => {
     }
   };
 
+  const truncate_group_id = (id: string, maxLength: number = 14) => {
+    if (id.length <= maxLength) return id;
+    return `${id.slice(0, maxLength)}...`;
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -108,21 +114,23 @@ const GroupPage: React.FC = () => {
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900" data-testid="group-name">
+            <div className="flex-1 min-w-0">
+              <h1 className="text-xl md:text-2xl font-bold text-gray-900 truncate" data-testid="group-name">
                 {group.name}
               </h1>
-              <p className="text-sm text-gray-600 mt-1">
-                グループID: {groupId}
+              <p className="text-xs md:text-sm text-gray-600 mt-1">
+                グループID: <span className="font-mono">{truncate_group_id(groupId || '')}</span>
               </p>
             </div>
-            <div className="flex items-center space-x-3">
+            
+            {/* デスクトップ表示: 通常のボタン */}
+            <div className="hidden md:flex items-center space-x-3">
               <Button
                 variant="outline"
                 onClick={handle_share}
                 data-testid="share-group-button"
               >
-                {copySuccess ? 'コピー済み!' : 'URLをシェア'}
+                {copySuccess ? 'コピー済み!' : 'シェア'}
               </Button>
               <Button
                 variant="outline"
@@ -132,13 +140,22 @@ const GroupPage: React.FC = () => {
                 ホーム
               </Button>
             </div>
+
+            {/* モバイル表示: ハンバーガーメニュー */}
+            <div className="md:hidden">
+              <HamburgerMenu
+                groupId={groupId}
+                onShare={handle_share}
+                shareText={copySuccess ? 'コピー済み!' : 'シェア'}
+              />
+            </div>
           </div>
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="space-y-8">
+      <main className="max-w-6xl mx-auto px-4 py-4 md:py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
+          <div className="space-y-4 md:space-y-8">
             <MemberSection
               members={group.members}
               onMembersChange={handle_members_change}
@@ -149,7 +166,7 @@ const GroupPage: React.FC = () => {
               onPaymentsChange={handle_payments_change}
             />
           </div>
-          <div>
+          <div className="space-y-4 md:space-y-8">
             <CalculationSection
               result={calculation_result}
               members={group.members}
