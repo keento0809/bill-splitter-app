@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Button from '../common/Button';
 import Input from '../common/Input';
 import Modal from '../common/Modal';
+import CollapsibleSection from '../common/CollapsibleSection';
 import { generate_id, validate_name } from '../../utils/helpers';
 import type { Member } from '../../types/index.d.ts';
 
@@ -101,12 +102,18 @@ const MemberSection: React.FC<MemberSectionProps> = ({
     save_edit();
   };
 
-  return (
-    <div className="card">
-      <h2 className="text-xl font-semibold text-gray-900 mb-4">
-        メンバー ({members.filter(m => m.isActive).length}人)
-      </h2>
+  const member_icon = (
+    <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+    </svg>
+  );
 
+  return (
+    <CollapsibleSection
+      title={`メンバー (${members.filter(m => m.isActive).length}人)`}
+      icon={member_icon}
+      data-testid="member-section"
+    >
       <form onSubmit={handle_new_member_submit} className="mb-6">
         <div className="flex gap-2">
           <div className="flex-1">
@@ -162,12 +169,13 @@ const MemberSection: React.FC<MemberSectionProps> = ({
                   </span>
                 )}
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-1 md:space-x-2">
                 <Button
                   size="sm"
                   variant="outline"
                   onClick={() => start_editing(member)}
                   data-testid={`edit-member-${member.id}`}
+                  className="text-xs md:text-sm px-2 md:px-3"
                 >
                   編集
                 </Button>
@@ -176,6 +184,7 @@ const MemberSection: React.FC<MemberSectionProps> = ({
                   variant={member.isActive ? 'outline' : 'secondary'}
                   onClick={() => toggle_member_active(member.id)}
                   data-testid={`toggle-member-${member.id}`}
+                  className="text-xs md:text-sm px-2 md:px-3"
                 >
                   {member.isActive ? '無効化' : '有効化'}
                 </Button>
@@ -184,6 +193,7 @@ const MemberSection: React.FC<MemberSectionProps> = ({
                   variant="danger"
                   onClick={() => remove_member(member.id)}
                   data-testid={`remove-member-${member.id}`}
+                  className="text-xs md:text-sm px-2 md:px-3"
                 >
                   削除
                 </Button>
@@ -232,7 +242,7 @@ const MemberSection: React.FC<MemberSectionProps> = ({
           </div>
         </form>
       </Modal>
-    </div>
+    </CollapsibleSection>
   );
 };
 

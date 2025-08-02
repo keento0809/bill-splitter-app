@@ -30,10 +30,18 @@ export function validate_amount(value: string): boolean {
 export function validate_name(name: string): boolean {
   // セキュリティ強化: XSS対策として危険な文字を除外
   const trimmed = name.trim();
-  const dangerousChars = /[<>"'&\x00-\x1f\x7f-\x9f]/;
+  
+  // 危険な文字のチェック
+  const hasDangerousChars = /[<>"'&]/.test(trimmed);
+  const hasControlChars = trimmed.split('').some(char => {
+    const code = char.charCodeAt(0);
+    return (code >= 0 && code <= 31) || (code >= 127 && code <= 159);
+  });
+  
   return trimmed.length > 0 && 
          trimmed.length <= 20 && 
-         !dangerousChars.test(trimmed);
+         !hasDangerousChars &&
+         !hasControlChars;
 }
 
 export function parse_amount(value: string): number {

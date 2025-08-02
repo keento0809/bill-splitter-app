@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Button from '../common/Button';
 import Input from '../common/Input';
 import Modal from '../common/Modal';
+import CollapsibleSection from '../common/CollapsibleSection';
 import { generate_id, validate_amount, parse_amount, format_currency, format_date } from '../../utils/helpers';
 import type { Payment, Member, PaymentFormData } from '../../types/index.d.ts';
 
@@ -9,14 +10,19 @@ interface PaymentSectionProps {
   payments: Payment[];
   members: Member[];
   onPaymentsChange: (payments: Payment[]) => void;
+  isFormOpen?: boolean;
+  onFormOpenChange?: (isOpen: boolean) => void;
 }
 
 const PaymentSection: React.FC<PaymentSectionProps> = ({
   payments,
   members,
   onPaymentsChange,
+  isFormOpen: externalIsFormOpen = false,
+  onFormOpenChange,
 }) => {
-  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [internalIsFormOpen, setInternalIsFormOpen] = useState(false);
+  
   const [editingPayment, setEditingPayment] = useState<Payment | null>(null);
   const [formData, setFormData] = useState<PaymentFormData>({
     amount: '',
@@ -29,6 +35,10 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
 
   const activeMembers = members.filter(m => m.isActive);
 
+  // 外部制御がある場合はそれを使用、ない場合は内部状態を使用
+  const isFormOpen = onFormOpenChange ? externalIsFormOpen : internalIsFormOpen;
+  const setIsFormOpen = onFormOpenChange || setInternalIsFormOpen;
+
   const reset_form = () => {
     setFormData({
       amount: '',
@@ -40,11 +50,14 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
     setErrors({});
   };
 
-  const open_add_form = () => {
-    reset_form();
-    setEditingPayment(null);
-    setIsFormOpen(true);
-  };
+
+  // 外部から制御される場合、externalIsFormOpenがtrueに変更されたときにフォームを開く
+  useEffect(() => {
+    if (onFormOpenChange && externalIsFormOpen) {
+      reset_form();
+      setEditingPayment(null);
+    }
+  }, [externalIsFormOpen, onFormOpenChange]);
 
   const open_edit_form = (payment: Payment) => {
     setFormData({
@@ -163,20 +176,18 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
     return members.find(m => m.id === memberId)?.name || '不明';
   };
 
+  const payment_icon = (
+    <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+    </svg>
+  );
+
   return (
-    <div className="card">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold text-gray-900">
-          支払い履歴 ({payments.length}件)
-        </h2>
-        <Button
-          onClick={open_add_form}
-          disabled={activeMembers.length === 0}
-          data-testid="add-payment-button"
-        >
-          支払い追加
-        </Button>
-      </div>
+    <CollapsibleSection
+      title={`支払い履歴 (${payments.length}件)`}
+      icon={payment_icon}
+      data-testid="payment-section"
+    >
 
       <div className="space-y-3">
         {payments.length === 0 ? (
@@ -190,43 +201,52 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
               className="border border-gray-200 rounded-lg p-4 bg-white"
               data-testid={`payment-item-${payment.id}`}
             >
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <h3 className="font-medium text-gray-900">
-                      {payment.description}
-                    </h3>
-                    <span className="text-lg font-semibold text-primary">
-                      {format_currency(payment.amount)}
-                    </span>
-                  </div>
-                  <p className="text-sm text-gray-600 mb-1">
+              <div className="space-y-3">
+                {/* タイトルと金額 */}
+                <div className="flex justify-between items-center">
+                  <h3 className="font-medium text-gray-900">
+                    {payment.description}
+                  </h3>
+                  <span className="text-lg font-semibold text-primary">
+                    {format_currency(payment.amount)}
+                  </span>
+                </div>
+                
+                {/* 詳細情報 */}
+                <div className="space-y-1">
+                  <p className="text-sm text-gray-600">
                     支払者: {get_member_name(payment.payerId)}
                   </p>
-                  <p className="text-sm text-gray-600 mb-1">
+                  <p className="text-sm text-gray-600">
                     参加者: {payment.participants.map(id => get_member_name(id)).join(', ')}
                   </p>
                   <p className="text-xs text-gray-400">
                     {format_date(payment.createdAt)}
                   </p>
                 </div>
-                <div className="flex items-center space-x-2 ml-4">
-                  <Button
-                    size="sm"
-                    variant="outline"
+
+                {/* アクションボタン */}
+                <div className="flex items-center space-x-2 pt-2">
+                  <button
                     onClick={() => open_edit_form(payment)}
                     data-testid={`edit-payment-${payment.id}`}
+                    className="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+                    title="編集"
                   >
-                    編集
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="danger"
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </button>
+                  <button
                     onClick={() => remove_payment(payment.id)}
                     data-testid={`remove-payment-${payment.id}`}
+                    className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1"
+                    title="削除"
                   >
-                    削除
-                  </Button>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
                 </div>
               </div>
             </div>
@@ -355,7 +375,7 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
           </div>
         </form>
       </Modal>
-    </div>
+    </CollapsibleSection>
   );
 };
 
