@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Button from '../common/Button';
 import Input from '../common/Input';
 import Modal from '../common/Modal';
@@ -23,9 +23,6 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
 }) => {
   const [internalIsFormOpen, setInternalIsFormOpen] = useState(false);
   
-  // 外部制御がある場合はそれを使用、ない場合は内部状態を使用
-  const isFormOpen = onFormOpenChange ? externalIsFormOpen : internalIsFormOpen;
-  const setIsFormOpen = onFormOpenChange || setInternalIsFormOpen;
   const [editingPayment, setEditingPayment] = useState<Payment | null>(null);
   const [formData, setFormData] = useState<PaymentFormData>({
     amount: '',
@@ -38,6 +35,10 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
 
   const activeMembers = members.filter(m => m.isActive);
 
+  // 外部制御がある場合はそれを使用、ない場合は内部状態を使用
+  const isFormOpen = onFormOpenChange ? externalIsFormOpen : internalIsFormOpen;
+  const setIsFormOpen = onFormOpenChange || setInternalIsFormOpen;
+
   const reset_form = () => {
     setFormData({
       amount: '',
@@ -48,6 +49,15 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
     });
     setErrors({});
   };
+
+
+  // 外部から制御される場合、externalIsFormOpenがtrueに変更されたときにフォームを開く
+  useEffect(() => {
+    if (onFormOpenChange && externalIsFormOpen) {
+      reset_form();
+      setEditingPayment(null);
+    }
+  }, [externalIsFormOpen, onFormOpenChange]);
 
   const open_edit_form = (payment: Payment) => {
     setFormData({
