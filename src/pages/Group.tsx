@@ -35,6 +35,11 @@ const GroupPage: React.FC = () => {
           return;
         }
         setGroup(loaded_group);
+        
+        // メンバーがいない場合は自動的にメンバー管理モーダルを開く
+        if (loaded_group.members.length === 0) {
+          setIsMemberModalOpen(true);
+        }
       } catch {
         setError('グループの読み込みに失敗しました');
       } finally {
@@ -182,25 +187,21 @@ const GroupPage: React.FC = () => {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
-          {/* 左側: 清算結果（最初に表示、常に開いた状態） */}
-          <div className="space-y-4 md:space-y-8">
-            <CalculationSection
-              result={calculation_result}
-              members={group.members}
-            />
-          </div>
+        <div className="space-y-4 md:space-y-8">
+          {/* 清算結果 */}
+          <CalculationSection
+            result={calculation_result}
+            members={group.members}
+          />
           
-          {/* 右側: 支払い履歴 */}
-          <div className="space-y-4 md:space-y-8">
-            <PaymentSection
-              payments={group.payments}
-              members={group.members}
-              onPaymentsChange={handle_payments_change}
-              isFormOpen={isPaymentFormOpen}
-              onFormOpenChange={setIsPaymentFormOpen}
-            />
-          </div>
+          {/* 支払い履歴 */}
+          <PaymentSection
+            payments={group.payments}
+            members={group.members}
+            onPaymentsChange={handle_payments_change}
+            isFormOpen={isPaymentFormOpen}
+            onFormOpenChange={setIsPaymentFormOpen}
+          />
         </div>
       </main>
 
