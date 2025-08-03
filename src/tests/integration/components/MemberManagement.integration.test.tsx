@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import Group from '../../../pages/Group';
 import type { Group as GroupType } from '../../../types/index.d.ts';
@@ -88,6 +89,8 @@ describe('Member Management Integration Tests', () => {
     });
 
     it('メンバーセクションの基本機能確認', async () => {
+      const user = userEvent.setup();
+      
       render(
         <MemoryRouter>
           <Group />
@@ -99,11 +102,22 @@ describe('Member Management Integration Tests', () => {
         expect(screen.getByTestId('group-name')).toBeInTheDocument();
       });
 
+      // デスクトップ用のメンバーボタンをクリックしてモーダルを開く
+      const memberButton = screen.getByTestId('desktop-members-button');
+      expect(memberButton).toBeInTheDocument();
+      
+      await user.click(memberButton);
+
+      // メンバー管理モーダルが開くまで待機
+      await waitFor(() => {
+        expect(screen.getByTestId('member-management-modal')).toBeInTheDocument();
+      });
+
       // メンバー追加フォームが表示される
       expect(screen.getByTestId('add-member-input')).toBeInTheDocument();
       expect(screen.getByTestId('add-member-button')).toBeInTheDocument();
 
-      // 既存メンバーが表示される（実際に表示されているものをテスト）
+      // 既存メンバーが表示される
       const memberItems = screen.getAllByTestId(/member-item-/);
       expect(memberItems.length).toBeGreaterThan(0);
     });
