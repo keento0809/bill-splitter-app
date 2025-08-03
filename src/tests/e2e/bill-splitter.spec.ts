@@ -9,8 +9,6 @@ test.describe('割り勘アプリ E2Eテスト', () => {
     await expect(page.locator('h1')).toContainText('割り勘アプリ');
     await expect(page.getByTestId('create-group-name-input')).toBeVisible();
     await expect(page.getByTestId('create-group-button')).toBeVisible();
-    await expect(page.getByTestId('join-group-id-input')).toBeVisible();
-    await expect(page.getByTestId('join-group-button')).toBeVisible();
   });
 
   test('新規グループ作成フロー', async ({ page }) => {
@@ -30,7 +28,9 @@ test.describe('割り勘アプリ E2Eテスト', () => {
     await page.getByTestId('create-group-name-input').fill('沖縄旅行');
     await page.getByTestId('create-group-button').click();
     
-    // 2. メンバー追加
+    // 2. メンバー追加（メンバーがいないため自動的にモーダルが開く）
+    await page.waitForSelector('[data-testid="member-management-modal"]');
+    
     await page.getByTestId('add-member-input').fill('Alice');
     await page.getByTestId('add-member-button').click();
     
@@ -39,6 +39,9 @@ test.describe('割り勘アプリ E2Eテスト', () => {
     
     await page.getByTestId('add-member-input').fill('Charlie');
     await page.getByTestId('add-member-button').click();
+    
+    // メンバー管理モーダルを閉じる
+    await page.keyboard.press('Escape');
     
     // メンバーが追加されたことを確認
     await expect(page.locator('text=メンバー (3人)')).toBeVisible();
@@ -80,6 +83,9 @@ test.describe('割り勘アプリ E2Eテスト', () => {
     await page.getByTestId('create-group-name-input').fill('テストグループ');
     await page.getByTestId('create-group-button').click();
     
+    // メンバー管理モーダルが自動的に開くまで待機
+    await page.waitForSelector('[data-testid="member-management-modal"]');
+    
     // メンバー追加
     await page.getByTestId('add-member-input').fill('テストユーザー');
     await page.getByTestId('add-member-button').click();
@@ -103,11 +109,17 @@ test.describe('割り勘アプリ E2Eテスト', () => {
     await page.getByTestId('create-group-name-input').fill('テストグループ');
     await page.getByTestId('create-group-button').click();
     
+    // メンバー管理モーダルが自動的に開くまで待機
+    await page.waitForSelector('[data-testid="member-management-modal"]');
+    
     await page.getByTestId('add-member-input').fill('Alice');
     await page.getByTestId('add-member-button').click();
     
     await page.getByTestId('add-member-input').fill('Bob');
     await page.getByTestId('add-member-button').click();
+    
+    // メンバー管理モーダルを閉じる
+    await page.keyboard.press('Escape');
     
     // 支払い追加
     await page.getByTestId('add-payment-button').click();
@@ -138,12 +150,6 @@ test.describe('割り勘アプリ E2Eテスト', () => {
     await expect(page.getByTestId('no-payments-message')).toBeVisible();
   });
 
-  test('エラーハンドリング', async ({ page }) => {
-    // 無効なグループIDで参加を試行
-    await page.getByTestId('join-group-id-input').fill('invalid-id');
-    await page.getByTestId('join-group-button').click();
-    await expect(page.getByTestId('error-message')).toBeVisible();
-  });
 
   test('URL共有機能', async ({ page, context }) => {
     // Clipboard APIの権限を許可
@@ -152,6 +158,10 @@ test.describe('割り勘アプリ E2Eテスト', () => {
     // グループ作成
     await page.getByTestId('create-group-name-input').fill('共有テスト');
     await page.getByTestId('create-group-button').click();
+    
+    // メンバー管理モーダルが自動的に開くので閉じる
+    await page.waitForSelector('[data-testid="member-management-modal"]');
+    await page.keyboard.press('Escape');
     
     // URL共有ボタンをクリック
     await page.getByTestId('share-group-button').click();
@@ -168,7 +178,9 @@ test.describe('割り勘アプリ E2Eテスト', () => {
     await page.getByTestId('create-group-name-input').fill('モバイルテスト');
     await page.getByTestId('create-group-button').click();
     
-    // モバイルでも基本機能が動作することを確認
+    // メンバー管理モーダルが自動的に開くまで待機
+    await page.waitForSelector('[data-testid="member-management-modal"]');
+    
     await page.getByTestId('add-member-input').fill('モバイルユーザー');
     await page.getByTestId('add-member-button').click();
     
@@ -180,12 +192,18 @@ test.describe('割り勘アプリ E2Eテスト', () => {
     await page.getByTestId('create-group-name-input').fill('複雑な清算');
     await page.getByTestId('create-group-button').click();
     
+    // メンバー管理モーダルが自動的に開くまで待機
+    await page.waitForSelector('[data-testid="member-management-modal"]');
+    
     // 4人のメンバー追加
     const members = ['Alice', 'Bob', 'Charlie', 'David'];
     for (const member of members) {
       await page.getByTestId('add-member-input').fill(member);
       await page.getByTestId('add-member-button').click();
     }
+    
+    // メンバー管理モーダルを閉じる
+    await page.keyboard.press('Escape');
     
     // 複数の支払い追加
     const payments = [

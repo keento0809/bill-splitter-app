@@ -9,7 +9,6 @@ import type { Group, GroupSettings } from '../types/index.d.ts';
 const Home: React.FC = () => {
   const navigate = useNavigate();
   const [groupName, setGroupName] = useState('');
-  const [joinGroupId, setJoinGroupId] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -49,39 +48,12 @@ const Home: React.FC = () => {
     }
   };
 
-  const join_group = async () => {
-    if (!joinGroupId.trim()) {
-      setError('グループIDを入力してください');
-      return;
-    }
-
-    setLoading(true);
-    setError('');
-
-    try {
-      const group = await storage_service.get_group(joinGroupId.trim());
-      if (!group) {
-        setError('指定されたグループが見つかりません');
-        return;
-      }
-
-      navigate(`/group/${joinGroupId.trim()}`);
-    } catch {
-      setError('グループへの参加に失敗しました');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handle_group_name_change = (value: string) => {
     setGroupName(value);
     if (error) setError('');
   };
 
-  const handle_join_id_change = (value: string) => {
-    setJoinGroupId(value);
-    if (error) setError('');
-  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
@@ -121,30 +93,6 @@ const Home: React.FC = () => {
             </div>
           </div>
 
-          <div className="border-t border-gray-200 pt-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
-              既存のグループに参加
-            </h2>
-            <div className="space-y-4">
-              <Input
-                label="グループID"
-                value={joinGroupId}
-                onChange={handle_join_id_change}
-                placeholder="グループIDを入力"
-                data-testid="join-group-id-input"
-              />
-              <Button
-                onClick={join_group}
-                variant="secondary"
-                loading={loading}
-                disabled={!joinGroupId.trim()}
-                className="w-full"
-                data-testid="join-group-button"
-              >
-                グループに参加
-              </Button>
-            </div>
-          </div>
 
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-3">
