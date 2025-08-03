@@ -37,7 +37,6 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
 
   // 外部制御がある場合はそれを使用、ない場合は内部状態を使用
   const isFormOpen = onFormOpenChange ? externalIsFormOpen : internalIsFormOpen;
-  const setIsFormOpen = onFormOpenChange || setInternalIsFormOpen;
 
   const reset_form = () => {
     setFormData({
@@ -52,12 +51,12 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
 
 
   // 外部から制御される場合、externalIsFormOpenがtrueに変更されたときにフォームを開く
+  // 編集中でない場合のみフォームをリセット
   useEffect(() => {
-    if (onFormOpenChange && externalIsFormOpen) {
+    if (onFormOpenChange && externalIsFormOpen && !editingPayment) {
       reset_form();
-      setEditingPayment(null);
     }
-  }, [externalIsFormOpen, onFormOpenChange]);
+  }, [externalIsFormOpen, onFormOpenChange, editingPayment]);
 
   const open_edit_form = (payment: Payment) => {
     setFormData({
@@ -69,11 +68,22 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({
     });
     setEditingPayment(payment);
     setErrors({});
-    setIsFormOpen(true);
+    
+    // 外部制御がある場合は外部状態を更新、ない場合は内部状態を更新
+    if (onFormOpenChange) {
+      onFormOpenChange(true);
+    } else {
+      setInternalIsFormOpen(true);
+    }
   };
 
   const close_form = () => {
-    setIsFormOpen(false);
+    // 外部制御がある場合は外部状態を更新、ない場合は内部状態を更新
+    if (onFormOpenChange) {
+      onFormOpenChange(false);
+    } else {
+      setInternalIsFormOpen(false);
+    }
     setEditingPayment(null);
     reset_form();
   };
